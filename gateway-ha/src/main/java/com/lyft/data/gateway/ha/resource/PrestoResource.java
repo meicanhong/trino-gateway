@@ -178,7 +178,7 @@ public class PrestoResource {
                                                String useSchema) {
     try {
       GlobalPropertiesDetail globalProperty =
-          OBJECT_MAPPER.readValue(jsonPayload, ResourceGroupsManager.GlobalPropertiesDetail.class);
+          OBJECT_MAPPER.readValue(jsonPayload, GlobalPropertiesDetail.class);
       GlobalPropertiesDetail newGlobalProperty =
           this.resourceGroupsManager.createGlobalProperty(globalProperty, useSchema);
       return Response.ok(newGlobalProperty).build();
@@ -217,7 +217,7 @@ public class PrestoResource {
                                                String useSchema) {
     try {
       GlobalPropertiesDetail globalProperty =
-          OBJECT_MAPPER.readValue(jsonPayload, ResourceGroupsManager.GlobalPropertiesDetail.class);
+          OBJECT_MAPPER.readValue(jsonPayload, GlobalPropertiesDetail.class);
       GlobalPropertiesDetail updatedGlobalProperty =
           this.resourceGroupsManager.updateGlobalProperty(globalProperty, useSchema);
       return Response.ok(updatedGlobalProperty).build();

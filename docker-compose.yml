@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  trino1:
+    image: trinodb/trino
+    ports:
+      - 9090:8080
+  trino2:
+    image: trinodb/trino
+    ports:
+      - 9091:8080
+

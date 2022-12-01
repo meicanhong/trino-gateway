@@ -1,5 +1,6 @@
 package com.lyft.data.gateway.ha.router;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Optional;
@@ -43,9 +44,16 @@ public interface RoutingGroupSelector {
             new FileReader(rulesConfigPath));
         Facts facts = new Facts();
         HashMap<String, String> result = new HashMap<String, String>();
+        BufferedReader br = request.getReader();
+        String str, sql = "";
+        while((str = br.readLine()) != null){
+          sql += str;
+        }
+        request.setAttribute("sql", sql);
         facts.put("request", request);
         facts.put("result", result);
         rulesEngine.fire(rules, facts);
+        Logger.log.error(result.get("routingGroup"));
         return result.get("routingGroup");
       } catch (Exception e) {
         Logger.log.error("Error opening rules configuration file,"

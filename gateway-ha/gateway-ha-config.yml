@@ -1,6 +1,6 @@
 routingRules:
-  rulesEngineEnabled: False
-  # rulesConfigPath: "src/main/resources/rules/routing_rules.yml"
+  rulesEngineEnabled: true
+  rulesConfigPath: "/Users/danny/IdeaProjects/presto-gateway/gateway-ha/src/main/resources/rules/routing_rules.yml"
 
 requestRouter:
   port: 8080
@@ -47,13 +47,13 @@ logging:
 
   # Logger-specific levels.
   loggers:
-    com.lyft: DEBUG
+    com.lyft: ERROR
 
   appenders:
     - type: console
     - type: file
-      currentLogFilename: /var/log/prestoproxy/prestoproxy-java.log
-      archivedLogFilenamePattern: /var/log/prestoproxy/prestoproxy-java-%d{yyyy-MM-dd}-%i.log.gz
+      currentLogFilename: ./var/log/prestoproxy/prestoproxy-java.log
+      archivedLogFilenamePattern: ./var/log/prestoproxy/prestoproxy-java-%d{yyyy-MM-dd}-%i.log.gz
       archivedFileCount: 7
       timeZone: UTC
       maxFileSize: 100MB

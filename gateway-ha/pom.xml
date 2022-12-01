@@ -9,7 +9,7 @@
         <groupId>com.lyft.data</groupId>
         <artifactId>prestogateway-parent</artifactId>
         <version>1.9.5</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>gateway-ha</artifactId>
@@ -149,6 +149,11 @@
             <artifactId>okhttp</artifactId>
             <version>3.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.3</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -215,7 +220,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>${activejdbc.version}</version>
+                <version>2.3</version>
                 <configuration>
                     <configFile>${project.basedir}/src/migrations/database.properties</configFile>
                     <environments>${environments}</environments>

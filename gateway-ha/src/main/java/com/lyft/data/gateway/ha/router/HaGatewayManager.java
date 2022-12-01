@@ -43,7 +43,7 @@ public class HaGatewayManager implements GatewayBackendManager {
     try {
       connectionManager.open();
       List<GatewayBackend> proxyBackendList =
-          GatewayBackend.where("active = ? and routing_group = ?", true, "adhoc");
+          GatewayBackend.where("active = ?", true);
       return GatewayBackend.upcast(proxyBackendList);
     } catch (Exception e) {
       log.info("Error fetching all backends", e.getLocalizedMessage());

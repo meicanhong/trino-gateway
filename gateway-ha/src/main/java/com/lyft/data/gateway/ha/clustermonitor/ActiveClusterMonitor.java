@@ -82,11 +82,11 @@ public class ActiveClusterMonitor implements Managed {
                 stats.add(clusterStats);
               }
 
-              if (clusterStatsObservers != null) {
-                for (PrestoClusterStatsObserver observer : clusterStatsObservers) {
-                  observer.observe(stats);
-                }
-              }
+//              if (clusterStatsObservers != null) {
+//                for (PrestoClusterStatsObserver observer : clusterStatsObservers) {
+//                  observer.observe(stats);
+//                }
+//              }
 
             } catch (Exception e) {
               log.error("Error performing backend monitor tasks", e);
