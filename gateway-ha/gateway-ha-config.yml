@@ -8,9 +8,9 @@ requestRouter:
   historySize: 1000
 
 dataStore:
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/prestogateway
-  user: root
-  password: root123
+  jdbcUrl: jdbc:mysql://172.17.0.3:3306/prestogateway
+  user: admin
+  password: 123456
   driver: com.mysql.cj.jdbc.Driver
 
 server:
@@ -30,7 +30,7 @@ notifier:
 
 # This can be adjusted based on the coordinator state
 monitor:
-  connectionTimeout: 15
+  connectionTimeout: 30
 
 modules:
   - com.lyft.data.gateway.ha.module.HaGatewayProviderModule

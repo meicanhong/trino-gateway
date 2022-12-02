@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec java -jar /gateway/gateway-ha.jar server /gateway/config.yml

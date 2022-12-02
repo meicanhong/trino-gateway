@@ -1,3 +1,5 @@
+FROM registry.access.redhat.com/ubi8/ubi
+
 ARG GATEWAY_VERSION=1.9.5
 ENV JAVA_HOME /usr/lib/jvm/zulu11
 
@@ -12,14 +14,12 @@ RUN \
     mkdir -p /gateway/bin /gateway/logs && \
     chown -R "gateway:gateway" /gateway 
 
-COPY --chown=gateway:gateway ./gateway-ha/target/gateway-ha-$GATEWAY_VERSION-jar-with-dependencies.jar /gateway/gateway-ha.jar
-COPY --chown=gateway:gateway ./gateway-ha/gateway-ha-config.yml /gateway/config.yml
-COPY --chown=gateway:gateway bin/run-gateway /gateway/bin
-COPY --chown=gateway:gateway bin/health-check /gateway/bin
+COPY --chown=gateway:gateway gateway-ha/target/gateway-ha-$GATEWAY_VERSION-jar-with-dependencies.jar /gateway/gateway-ha.jar
+COPY --chown=gateway:gateway gateway-ha/gateway-ha-config.yml /gateway/config.yml
+COPY --chown=gateway:gateway run-gateway /gateway/bin/run-gateway
 
 EXPOSE 8080 8090 8091
 USER gateway:gateway
 ENV LANG en_US.UTF-8
+RUN chmod a+x /gateway/bin/run-gateway
 CMD ["/gateway/bin/run-gateway"]
-HEALTHCHECK --interval=10s --timeout=5s --start-period=10s \
-  CMD /gateway/bin/health-check

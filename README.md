@@ -36,7 +36,7 @@ java -jar gateway-ha-1.9.5-jar-with-dependencies.jar server ../gateway-ha-config
 运行 src/main/java/com/lyft/data/gateway/ha/HaGatewayLauncher.java 文件，
 添加运行参数
 ```text
-server $FileDir$/gateway-ha-config.yml
+server $ProjectFileDir$/gateway-ha/gateway-ha-config.yml
 ```
 ps: 如果启动报错，请先用 shell 方式启动一次项目，访问Web端，成功后才可以用IDEA启动。
 
