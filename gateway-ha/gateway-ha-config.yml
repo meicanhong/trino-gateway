@@ -1,6 +1,6 @@
 routingRules:
   rulesEngineEnabled: true
-  rulesConfigPath: "/Users/danny/IdeaProjects/presto-gateway/gateway-ha/src/main/resources/rules/routing_rules.yml"
+  rulesConfigPath: "/Users/fp/IdeaProjects/trino-gateway/gateway-ha/src/main/resources/rules/routing_rules.yml"
 
 requestRouter:
   port: 8080

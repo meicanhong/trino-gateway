@@ -4,7 +4,7 @@ compositeRuleType: "ActivationRuleGroup"
 composingRules:
   - name: "trino1"
     description: "route to trino1"
-    condition: "request.getAttribute(\"sql\") contains \"-- Metabase\""
+    condition: "request.getAttribute(\"sql\") contains \"runtime.queries\""
     actions:
       - "result.put(\"routingGroup\", \"trino1\")"
   - name: "trino2"
