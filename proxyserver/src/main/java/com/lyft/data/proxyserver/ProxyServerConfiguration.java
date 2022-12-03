@@ -15,6 +15,10 @@ public class ProxyServerConfiguration {
   private String keystorePass;
   private boolean forwardKeystore;
 
+  private String user;
+
+  private String password;
+
   protected String getPrefix() {
     return prefix;
   }

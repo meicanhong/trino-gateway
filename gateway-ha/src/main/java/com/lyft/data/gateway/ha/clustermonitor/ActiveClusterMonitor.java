@@ -3,6 +3,9 @@ package com.lyft.data.gateway.ha.clustermonitor;
 import static com.lyft.data.gateway.ha.handler.QueryIdCachingProxyHandler.UI_API_QUEUED_LIST_PATH;
 import static com.lyft.data.gateway.ha.handler.QueryIdCachingProxyHandler.UI_API_STATS_PATH;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
@@ -11,11 +14,7 @@ import com.lyft.data.gateway.ha.config.MonitorConfiguration;
 import com.lyft.data.gateway.ha.config.ProxyBackendConfiguration;
 import com.lyft.data.gateway.ha.router.GatewayBackendManager;
 import io.dropwizard.lifecycle.Managed;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.ws.rs.HttpMethod;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 
 @Slf4j
 public class ActiveClusterMonitor implements Managed {
@@ -34,7 +32,7 @@ public class ActiveClusterMonitor implements Managed {
   public static final int BACKEND_CONNECT_TIMEOUT_SECONDS = 15;
   public static final int MONITOR_TASK_DELAY_MIN = 1;
   public static final int DEFAULT_THREAD_POOL_SIZE = 20;
-
+  public static final int CONNECT_TIMEOUT_MILLISECONDS = 5000;
   private static final String SESSION_USER = "sessionUser";
 
   private final List<PrestoClusterStatsObserver> clusterStatsObservers;
@@ -46,6 +44,8 @@ public class ActiveClusterMonitor implements Managed {
 
   private ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE);
   private ExecutorService singleTaskExecutor = Executors.newSingleThreadExecutor();
+
+  private Map<String, String> tokenMap = new HashMap<>();
 
   @Inject
   public ActiveClusterMonitor(
@@ -100,35 +100,37 @@ public class ActiveClusterMonitor implements Managed {
         });
   }
 
-  private String queryCluster(String target) {
-    HttpURLConnection conn = null;
-    try {
-      URL url = new URL(target);
-      conn = (HttpURLConnection) url.openConnection();
-      conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(connectionTimeout));
-      conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(connectionTimeout));
-      conn.setRequestMethod(HttpMethod.GET);
-      conn.connect();
-      int responseCode = conn.getResponseCode();
-      if (responseCode == HttpStatus.SC_OK) {
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader((InputStream) conn.getContent()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-          sb.append(line + "\n");
-        }
+  private String queryCluster(String target, String token) {
+    HttpResponse response = HttpRequest.get(target)
+            .cookie(token)
+            .timeout(CONNECT_TIMEOUT_MILLISECONDS)
+            .execute();
+    return response.body();
+  }
 
-        return sb.toString();
-      } else {
-        log.warn("Received non 200 response, response code: {}", responseCode);
-      }
+  /**
+   * Get Token for Web UI
+   * support http/https
+   * @param backend
+   * @return token
+   */
+  private String getToken(ProxyBackendConfiguration backend) {
+    String url = backend.getProxyTo() + "/ui/login";
+    try {
+      Map auth = new HashMap<>();
+      auth.put("username", backend.getUser());
+      auth.put("password", backend.getPassword());
+      HttpResponse response = HttpRequest.post(url)
+              .form(auth)//表单内容
+              .timeout(CONNECT_TIMEOUT_MILLISECONDS)
+              .execute();
+      Map<String, List<String>> headers = response.headers();
+      String str = headers.get("Set-Cookie").get(0);
+      String token = str.split(";")[0];
+      tokenMap.put(backend.getName(), token);
+      return token;
     } catch (Exception e) {
-      log.error("Error fetching cluster stats from [{}]", target, e);
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
-      }
+      log.error("Error fetching cluster stats from [{}]", e);
     }
     return null;
   }
@@ -137,9 +139,13 @@ public class ActiveClusterMonitor implements Managed {
     ClusterStats clusterStats = new ClusterStats();
     clusterStats.setClusterId(backend.getName());
 
-    // Fetch Cluster level Stats.
+    String token = getToken(backend);
+    if (ObjectUtil.isEmpty(token)) {
+      log.error("Error login {} cluster", backend.getName());
+    }
+
     String target = backend.getProxyTo() + UI_API_STATS_PATH;
-    String response = queryCluster(target);
+    String response = queryCluster(target, token);
     if (Strings.isNullOrEmpty(response)) {
       log.error("Received null/empty response for {}", target);
       return  clusterStats;
@@ -164,7 +170,7 @@ public class ActiveClusterMonitor implements Managed {
     // Fetch User Level Stats.
     Map<String, Integer> clusterUserStats = new HashMap<>();
     target = backend.getProxyTo() + UI_API_QUEUED_LIST_PATH;
-    response = queryCluster(target);
+    response = queryCluster(target, token);
     if (Strings.isNullOrEmpty(response)) {
       log.error("Received null/empty response for {}", target);
       return clusterStats;

@@ -27,6 +27,7 @@ gateway-ha/gateway-ha-config.yml 里的 routingRules.rulesConfigPath 设置为 g
 
 启动项目
 ```shell
+cd ./gateway-ha/target
 java -jar gateway-ha-1.9.5-jar-with-dependencies.jar server ../gateway-ha-config.yml
 ```
 浏览器访问Web端：http://localhost:8080/ ，运行成功

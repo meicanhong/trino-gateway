@@ -20,6 +20,10 @@ public class GatewayBackend extends Model {
   private static final String externalUrl = "external_url";
   private static final String active = "active";
 
+  private static final String user = "user";
+
+  private static final String password = "password";
+
   public static List<ProxyBackendConfiguration> upcast(List<GatewayBackend> gatewayBackendList) {
     List<ProxyBackendConfiguration> proxyBackendConfigurations = new ArrayList<>();
     for (GatewayBackend model : gatewayBackendList) {
@@ -29,6 +33,8 @@ public class GatewayBackend extends Model {
       backendConfig.setProxyTo(model.getString(backendUrl));
       backendConfig.setExternalUrl(model.getString(externalUrl));
       backendConfig.setName(model.getString(name));
+      backendConfig.setUser(model.getString(user));
+      backendConfig.setPassword(model.getString(password));
       proxyBackendConfigurations.add(backendConfig);
     }
     return proxyBackendConfigurations;
@@ -41,6 +47,8 @@ public class GatewayBackend extends Model {
         .set(backendUrl, backend.getProxyTo())
         .set(externalUrl, backend.getExternalUrl())
         .set(active, backend.isActive())
+        .set(user, backend.getUser())
+        .set(password, backend.getPassword())
         .saveIt();
   }
 
@@ -54,7 +62,10 @@ public class GatewayBackend extends Model {
             backendUrl,
             backend.getProxyTo(),
             active,
-            backend.isActive())
+            backend.isActive(),
+            user,
+            password
+        )
         .insert();
   }
 }
