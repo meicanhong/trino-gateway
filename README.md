@@ -9,11 +9,12 @@ Java 环境安装和Maven安装跳过，自己折散
 
 安装MySQL 5.7
 ```dockerfile
-docker run -d -p 3306:3306  --name mysqldb -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=prestogateway -d mysql:5.7
+docker run -d -p 3306:3306  --name mysqldb -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=trinogateway -d mysql
 ```
 
-MySQL 初始化创建表：进入创建好的MySQL，
-在 prestogateway 下执行 src/main/resources/gateway-ha-persistence.sql
+MySQL 初始化创建表：
+
+进入创建好的MySQL， 在 trinogateway 下执行 src/main/resources/gateway-ha-persistence.sql
 
 使用 Maven 下载项目的依赖包
 ```mvn

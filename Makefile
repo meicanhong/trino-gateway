@@ -8,5 +8,5 @@ build:
 
 ifeq ($(TAG), beta)
 	docker build -t ${REGISTRY}/${NAMESPACE}/${NAME}:${TAG} .
-	docker run -d -p 8080:8080 --name="trino-gateway" ${REGISTRY}/${NAMESPACE}/${NAME}:${TAG}
+	docker run -d -p 8080:8080 --name="trino-gateway" --network my-net ${REGISTRY}/${NAMESPACE}/${NAME}:${TAG}
 endif

@@ -17,6 +17,7 @@ RUN \
 COPY --chown=gateway:gateway gateway-ha/target/gateway-ha-$GATEWAY_VERSION-jar-with-dependencies.jar /gateway/gateway-ha.jar
 COPY --chown=gateway:gateway gateway-ha/gateway-ha-config.yml /gateway/config.yml
 COPY --chown=gateway:gateway run-gateway /gateway/bin/run-gateway
+COPY --chown=gateway:gateway gateway-ha/src/main/resources/rules/routing_rules.yml /gateway/routing_rules.yml
 
 EXPOSE 8080 8090 8091
 USER gateway:gateway
